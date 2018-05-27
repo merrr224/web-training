@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>training</title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jcanvas/21.0.1/min/jcanvas.min.js"></script>
+
+    <script type="text/javascript">
+        // 遷移したときと遷移するときにそれぞれフェード
+        jQuery(function($){
+            $('body').fadeIn(1000);
+            $(window).on("beforeunload",function(e){
+                $('body').fadeOut();
+            });
+        });
+    </script>
+
+    <script type="text/javascript"><!--
+    // 色一覧[0]-[14]
+    var color = ["royalblue", "mediumseagreen", "yellow", "orange", "tomato", "magenta",
+      "deepskyblue","lawngreen", "olive", "gold", "hotpink", "indigo", "teal", "black", "red"];
+
+    function draw(){
+      // canvas対応ブラウザならコンテキストを取得して描画開始
+      var cvs = document.getElementById('map');
+      if(cvs.getContext){
+
+        // jCanvasで初期値を左上指定に
+        //$.jCanvas.defaults.fromCenter = false;
+
+        // canvasサイズを背景画像サイズに揃えて設定
+        //cvs.width = 475;
+        //cvs.height = 300;
+
+        var context = cvs.getContext('2d');
+
+        var xCoordinate=200;
+        var yCoordinate=180;
+        var maxCount = 9.5;
+        var minCount = 4.0;
+        var count = minCount;
+        var delta = 0.1;
+        var sw = 1.5;
+
+
+        var p1 = new Person(1, 'map', "Aさん", color[4], xCoordinate, yCoordinate, 80, 160);
+        var p2 = new Person(2, 'map', "Bさん", color[1], 300, 200, 350, 290);
+
+      }
+    }
+
+    var Person = function(i, cvsid, person_name, person_color, xCoordinate, yCoordinate, xOld, yOld){
+      this.index = i;
+      this.name = person_name;
+      this.color = person_color;
+
+      // 足跡の移動先座標と初期角度を計算
+      var xWay = 15;
+      var yWay = 15;
+      var xDiff = xCoordinate-xOld;
+      var yDiff = yCoordinate-yOld;
+      // 足跡の回転角度
+      var rotate_tmp = 0;
+
+      //左から来たとき
+      if(xDiff > 0){
+        xWay = xWay*-1;
+        if(xDiff < 25){ xWay = xWay+15; }
+         //左上
+        if(yDiff > 0){
+          rotate_tmp = 120;
+        }//左下
+        else{
+          rotate_tmp = 45;
+        }
+      }//右から来たとき
+      else{
+        if(xDiff > -25){ xWay = xWay-15; }
+         //右上
+        if(yDiff > 0){
+          rotate_tmp = 225;
+        }//右下
+        else{
+          rotate_tmp = 315;
+        }
+      }
+      //上から来たとき
+      if(yDiff > 0){
+        yWay = yWay*-1;
+        if(yDiff < 25){ yWay = yWay+15; }
+      }//下から来たとき
+      else{
+        if(yDiff > -25){ yWay = yWay-15; }
+      }
+
+      this.rotate = rotate_tmp;
+
+      // 足跡表示
+      $('#' + cvsid).drawImage({
+        layer: true,
+        name: 'foot'+this.index,
+        source: 'img/footprint.png',
+        x: xOld, y: yOld,
+        scale: 0.35,
+        rotate: this.rotate
+      });
+
+      // ポイントに星の表示
+      $('#' + cvsid).drawPolygon({
+        layer: true,
+        name: 'star'+this.index,
+        fillStyle: this.color,
+        x: xCoordinate, y: yCoordinate,
+        radius: 6,
+        sides: 5,
+        concavity: 0.5
+      });
+
+      // 足跡を前回位置から現在位置まで移動
+      $('#' + cvsid).animateLayer('foot'+this.index, {
+        scale: 0.5,
+        x: xCoordinate+xWay, y: yCoordinate+yWay
+        //rotate: 0
+      }, 3000, 'swing');
+
+      // 人名表示
+      $('#' + cvsid).drawText({
+        layer: true,
+        name: "name"+this.index,
+        fillStyle: this.color,     // 文字色
+        fontSize: 12,             // フォントサイズ
+        fontFamily: 'fantasy,sans-serif',      // フォントファミリー
+        align: 'center',
+        x: xCoordinate,                    // x方向位置
+        y: yCoordinate-15,                   // y方向位置
+        text: this.name,               // 文字
+
+        // マウスオーバー,アウトで拡大縮小
+        mouseover: function() {
+          console.log("over!");
+          $('#' + cvsid).animateLayer("name"+i, {
+            y: '-=5',
+            scale: '+=1.0',
+          }, 150, function() {
+            // Callback
+            console.log("callback!");
+            $('#' + cvsid).animateLayer('star'+i, {
+              radius: 11,
+              rotate: 144
+            }, 600, 'swing')});
+        },
+
+        mouseout: function() {
+          console.log("out!");
+          $('#' + cvsid).animateLayer('name'+i, {
+            y: '+=5',
+            scale: '-=1.0',
+          }, 150, function() {
+            // Callback
+            console.log("callback2!");
+            $('#' + cvsid).animateLayer('star'+i, {
+              radius: 6,
+              rotate: '-=144'
+            }, 600, 'swing')});
+        }
+      });
+
+
+
+    }
+    //-->
+    </script>
+  </head>
+
+  <body onLoad="draw()">
+    <script>document.body.style.display = 'none';</script>
+
+    <h1>TEST</h1>
+    <p>canvas test</p>
+    <canvas id="map" style="background-image:url('img/map_sample.jpg'); background-color:'#9eaae0';" width="475" height="300">
+
+    </canvas>
+  </body>
+</html>
