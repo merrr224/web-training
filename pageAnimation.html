@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>training</title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animsition/4.0.2/css/animsition.min.css" rel="stylesheet">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animsition/4.0.2/js/animsition.min.js"></script>
+
+<style>/*
+body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color:#fff;
+  z-index: 9999;   一番手前に
+  pointer-events: none;   他の要素にアクセス可能にするためにポインターイベントは無効に
+  opacity: 0;   初期値 : 透過状態
+  -webkit-transition: opacity .8s ease;   アニメーション時間は 0.8秒
+  transition: opacity .8s ease;
+}
+
+body.fadeout::after {
+  opacity: 1;
+}
+
+body.fadeout article{
+  -webkit-transform:scale(1.2);
+  transform:scale(1.2);
+}
+*/
+@media screen and (max-width: 400px) {
+   /* 表示領域が800px以上の場合に適用するスタイル */
+   body { padding-top: 120px }
+}
+</style>
+
+<script>/*
+$(window).on('load', function(){
+  $('body').removeClass('fadeout');
+});
+
+$(function() {
+  // ハッシュリンク(#)と別ウィンドウでページを開く場合はスルー
+  $('a:not([href^="#"]):not([target])').on('click', function(e){
+    e.preventDefault(); // ナビゲートをキャンセル
+    url = $(this).attr('href'); // 遷移先のURLを取得
+    if (url !== '') {
+      $('body').addClass('fadeout');  // bodyに class="fadeout"を挿入
+      setTimeout(function(){
+        window.location = url;  // 0.8秒後に取得したURLに遷移
+      }, 800);
+    }
+    return false;
+  });
+});*/
+$(document).ready(function() {
+
+  $(".animsition").animsition({
+
+    inClass               :   'fade-in',
+    outClass              :   'fade-out',
+    inDuration            :    1500,
+    outDuration           :    800,
+    linkElement           :   '.animsition-link',
+    // e.g. linkElement   :   'a:not([target="_blank"]):not([href^=#])'
+    loading               :    true,
+    loadingParentElement  :   'body', //animsition wrapper element
+    loadingClass          :   'animsition-loading',
+    unSupportCss          : [ 'animation-duration',
+                              '-webkit-animation-duration',
+                              '-o-animation-duration'
+                            ],
+    //"unSupportCss" option allows you to disable the "animsition" in case the css property in the array is not supported by your browser.
+    //The default setting is to disable the "animsition" in a browser that does not support "animation-duration".
+
+    overlay               :   false,
+
+    overlayClass          :   'animsition-overlay-slide',
+    overlayParentElement  :   'body'
+  });
+});
+</script>
+
+  </head>
+
+  <body style="text-align: center">
+    <section class="page one">
+      <article>
+        <h1>Page One</h1>
+        <div class="animsition">
+          <a href="index.html" class="animsition-link">Move to Next Page</a>
+        </div>
+      </article>
+    </section>
+  </body>
+
+</html>
